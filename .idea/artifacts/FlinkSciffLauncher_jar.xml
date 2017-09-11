@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="primaProva:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/primaProva_jar</output-path>
-    <root id="archive" name="primaProva.jar">
+  <artifact type="jar" name="FlinkSciffLauncher.jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/FlinkSciffLauncher_jar</output-path>
+    <root id="archive" name="FlinkSciffLauncher.jar">
       <element id="module-output" name="FlinkSciffLauncher" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/flink/force-shading/1.2.1/force-shading-1.2.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/esotericsoftware/minlog/minlog/1.2/minlog-1.2.jar" path-in-jar="/" />
