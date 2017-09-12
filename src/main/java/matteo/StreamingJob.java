@@ -7,6 +7,7 @@ import matteo.operations.KeyedSciffOperation;
 import matteo.operations.NotEmptyFilter;
 import matteo.utils.SubmodelVariables;
 import org.apache.commons.cli.*;
+import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -136,7 +137,7 @@ public class StreamingJob {
 		/* Setup stream enviroment */
 
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
+		env.getConfig().setLatencyTrackingInterval(1000);
 
         DataStream<String> data = env.socketTextStream(host, port);
 
