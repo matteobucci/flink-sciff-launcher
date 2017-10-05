@@ -87,7 +87,7 @@ public class KeyedSciffOperation extends RichFlatMapFunction<Tuple2<String, Stri
             error.update(currentError);
         }
 
-        if (currentWriter != null && currentReader != null) { //TODO: Cosa succede se l'elaborazione è già terminata?
+        if (currentWriter != null && currentReader != null) { 
             if(currentResult != null && (currentResult.equals("Yes") || currentResult.equals("No")) ){
                 if(o) System.out.println("Evento per elaborazione già terminata");
                 currentError.close();
