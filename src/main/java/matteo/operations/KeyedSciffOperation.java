@@ -33,22 +33,22 @@ public class KeyedSciffOperation extends RichFlatMapFunction<Tuple2<String, Stri
         ValueStateDescriptor<Scanner> readerDescriptor =
                 new ValueStateDescriptor<>(
                         "reader", // the state name
-                        TypeInformation.of(new TypeHint<Scanner>() {}), null); // default value of the state, if nothing was set
+                        TypeInformation.of(new TypeHint<Scanner>() {})); // default value of the state, if nothing was set
 
         ValueStateDescriptor<Scanner> errorDescriptor =
                 new ValueStateDescriptor<>(
                         "error", // the state name
-                        TypeInformation.of(new TypeHint<Scanner>() {}), null); // default value of the state, if nothing was set
+                        TypeInformation.of(new TypeHint<Scanner>() {})); // default value of the state, if nothing was set
 
         ValueStateDescriptor<PrintWriter> writerDescriptor =
                 new ValueStateDescriptor<>(
                         "writer", // the state name
-                        TypeInformation.of(new TypeHint<PrintWriter>() {}), null); // default value of the state, if nothing was set
+                        TypeInformation.of(new TypeHint<PrintWriter>() {})); // default value of the state, if nothing was set
 
         ValueStateDescriptor<String> resultDescriptor =
                 new ValueStateDescriptor<>(
                         "result", // the state name
-                        TypeInformation.of(new TypeHint<String>() {}), null); // default value of the state, if nothing was set
+                        TypeInformation.of(new TypeHint<String>() {})); // default value of the state, if nothing was set
 
 
 
@@ -67,7 +67,6 @@ public class KeyedSciffOperation extends RichFlatMapFunction<Tuple2<String, Stri
         Scanner currentError = null;
         String currentResult = null;
 
-
         if(writer != null && reader != null){
             currentReader = reader.value();
             currentWriter = writer.value();
@@ -83,11 +82,20 @@ public class KeyedSciffOperation extends RichFlatMapFunction<Tuple2<String, Stri
             currentError = new Scanner(p.getErrorStream());
             currentWriter = new PrintWriter(new BufferedWriter(new PrintWriter(p.getOutputStream())));
             currentReader.nextLine();
+            writer.update(currentWriter);
+            reader.update(currentReader);
+            error.update(currentError);
         }
 
         if (currentWriter != null && currentReader != null) { //TODO: Cosa succede se l'elaborazione è già terminata?
             if(currentResult != null && (currentResult.equals("Yes") || currentResult.equals("No")) ){
                 if(o) System.out.println("Evento per elaborazione già terminata");
+                currentError.close();
+                currentReader.close();
+                currentWriter.close();
+                writer.update(currentWriter);
+                reader.update(currentReader);
+                error.update(currentError);
             }else{
                 currentWriter.println(input.f1 + ".");
                 currentWriter.flush();
@@ -96,17 +104,20 @@ public class KeyedSciffOperation extends RichFlatMapFunction<Tuple2<String, Stri
                 if(o) System.out.println("Output -> " + currentResult);
                 if (currentResult.equals("Yes") || currentResult.equals("No")) {
                     out.collect(new Tuple2<>(input.f0, currentResult));
+                    currentError.close();
+                    currentReader.close();
+                    currentWriter.close();
+                    writer.update(currentWriter);
+                    reader.update(currentReader);
+                    error.update(currentError);
                 }
+
+                result.update(currentResult);
             }
 
         }else{
             throw new IllegalStateException("Le socket non sono state create con successo");
         }
 
-        //TODO: E' da spostare all'interno dell'if in cui si genera il processo
-        writer.update(currentWriter);
-        reader.update(currentReader);
-        error.update(currentError);
-        result.update(currentResult); //TODO: Questo deve rimanere qua
     }
 }
